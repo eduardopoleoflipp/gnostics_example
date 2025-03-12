@@ -11,3 +11,12 @@ Gnostics does not provide a perfect translations here are some issues I noticed:
 - Can't override default responses using operation level annotations (Medium)
 - Can't handle oneof (Top)
 - The library is abandoned. (Medium. It looks like we either write it ourselves or take over an abandoned one so there's not much of a choice)
+
+Gnostics + protoc-gen-connect-openapi
+- Adds extraneous tag by default
+- Can't handle one of
+
+## Conclusion
+- It feels that the Gnostics + protoc-gen-connect-openapi is a better way to go.
+- The translation is tighter and less error prone
+- the package seems easier to modify than gnostics.

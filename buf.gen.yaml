@@ -9,5 +9,3 @@ plugins:
     out: api/
     opt:
       - format=yaml
-      - debug
-

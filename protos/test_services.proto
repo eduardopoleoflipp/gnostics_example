@@ -6,7 +6,7 @@
   If the example is not covered there you'll need to look directly into the proto source
   https://github.com/google/gnostic/blob/main/openapiv3/OpenAPIv3.proto
 
-  Another issue is that this library is abandonedware 
+  Another I a is that this library is abandonedware 
   https://github.com/google/gnostic/issues/441
 */
 syntax = "proto3";
