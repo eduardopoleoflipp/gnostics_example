@@ -1,19 +1,14 @@
+/*
+  Examples on how to annotate the proto file with gnostics.
+  For more detailed examples check this files
+  https://github.com/google/gnostic/blob/main/testdata/v3.0/petstore.text
+  It's not a proto file but it contains the hierarchy of the annotations.
+  If the example is not covered there you'll need to look directly into the proto source
+  https://github.com/google/gnostic/blob/main/openapiv3/OpenAPIv3.proto
 
-// Copyright 2021 Google LLC.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
+  Another issue is that this library is abandonedware 
+  https://github.com/google/gnostic/issues/441
+*/
 syntax = "proto3";
 
 package tests.openapiv3annotations.message.v1;
@@ -22,31 +17,36 @@ import "google/api/annotations.proto";
 import "gnostic/openapi/v3/annotations.proto";
 
 option go_package = "github.com/google/gnostic/apps/protoc-gen-openapi/examples/tests/openapiv3annotations/message/v1;message";
-
+/*
+  Annotations at the document level
+*/ 
 option (gnostic.openapi.v3.document) = {
   info: {
-    title: "Title from annotation";
-    version: "Version from annotation";
-    description: "Description from annotation";
-    contact: {
-      name: "Contact Name";
-      url: "https://github.com/google/gnostic";
-      email: "gnostic@google.com";
-    }
-    license: {
-      name: "Apache License";
-      url: "https://github.com/google/gnostic/blob/master/LICENSE";
-    }
-  }
+    title: "Curator";
+    version: "1.0";
+  };
+  servers: [{
+    url: "dev-api.flipp.com/curator";
+    description: "Personalization service";
+  }];
+  security: {
+    additional_properties: [{
+      name: "ApiKeyAuth";
+      value: {
+        value: []
+      }
+    }]
+  };
   components: {
     security_schemes: {
       additional_properties: [
         {
-          name: "BasicAuth";
+          name: "ApiKeyAuth";
           value: {
             security_scheme: {
-              type: "http";
-              scheme: "basic";
+              type: "apiKey";
+              name: "Authorization";
+              in: "header"
             }
           }
         }
@@ -56,12 +56,31 @@ option (gnostic.openapi.v3.document) = {
 };
 
 service Messaging1 {
-  rpc UpdateMessage(Message) returns(Message) {
+  rpc UpdateMessage(UserInfoRequest) returns(UserInfoResponse) {
+    /*
+      NOTE: This library seems to be dependent on the google.api.http annotation to generate the openapi file.
+      If you do not add the google api annotations the file will not be generated correctly
+    */ 
     option(google.api.http) = {
         patch: "/v1/messages/{message_id}"
         body: "*"
     };
+    /*
+      Operations level annotations
+
+      - We can add tags summary etc.
+    */
     option(gnostic.openapi.v3.operation) = {
+        summary: "Get Content"
+        /*
+          ISSUE we can't have a ref under the description cuz description is only a string.
+        */ 
+        description: "./docs/get_content.md"
+        operation_id: "CuratorService_GetContent"
+        /*
+          ISSUE by default gnostics will add a tag with the name of the service in this case Messaging1 which messes up readme. Ideally we would only want the tags defined in here.
+        */ 
+        tags: ["Content"]
         security: [
           {
             additional_properties: [
@@ -74,24 +93,125 @@ service Messaging1 {
             ]
           }
         ]
+        responses: {
+          response_or_reference: {
+            name: "201"
+            value: {
+              response: {
+                description: "Example on how to add a response to a operation annotation"
+                content: {
+                  additional_properties: {
+                    name: "application/json"
+                    value: {
+                      schema: {
+                        reference: {
+                          _ref: "#/components/schemas/ContentResponse"
+                        }
+                      }
+                      example: {
+                        /*
+                          Long examples can be added even if the key says yaml the get properly converted into json in the resulting openapi file
+                        */
+                        yaml: "{\"publications\":[{\"globalId\":\"01HWX8FNE2ZAV0B4P5RQ7TN95G\",\"merchantId\":1,\"dates\":{\"availableFrom\":\"2024-04-08T18:47:43Z\",\"availableTo\":\"2026-04-18T18:47:43Z\",\"validFrom\":\"2024-04-08T18:47:43Z\",\"validTo\":\"2026-04-18T18:47:43Z\"},\"details\":{\"name\":\"some-name\",\"description\":\"some-description\",\"imageUrl\":\"https://example.com\",\"additionalInfo\":{\"key\":\"NewValue\"},\"backgroundImageUrl\":\"https://example.com/background_image.jpg\",\"backgroundColor\":\"#FFFFFF\",\"tintColor\":\"#FFFFFF\",\"additionalMedia\":[]},\"language\":\"LANGUAGE_EN\",\"source\":\"\",\"legacyIds\":null},{\"globalId\":\"01HXYF6J1PHEQJ9Y293NTTPH0G\",\"merchantId\":111111,\"dates\":{\"availableFrom\":\"2024-12-01T12:00:00Z\",\"availableTo\":\"2024-12-31T12:00:00Z\",\"validFrom\":\"2024-12-01T12:00:00Z\",\"validTo\":\"2024-12-31T12:00:00Z\"},\"details\":{\"name\":\"some-name\",\"description\":\"some-description\",\"imageUrl\":\"http://some-image.com\",\"additionalInfo\":{},\"backgroundImageUrl\":\"https://example.com/background_image.jpg\",\"backgroundColor\":\"\",\"tintColor\":\"\",\"additionalMedia\":[]},\"language\":\"LANGUAGE_EN\",\"source\":\"\",\"legacyIds\":null}],\"total\":0}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          response_or_reference: {
+            name: "404"
+            value: {
+              response: {
+                description: "Multiple response can be defined at the operation level"
+              }
+            }
+          }
+          /*
+            ISSUE: These are bogus responses definitions because they will NOT override the response coming from the parent messages. In this case:
+              - 200 will come from the Response message
+              - default defaults to the Status message defined somewhere in grpc
+            If you check the generated openapi file you'll see that the response for 200 and default are duplicated which is a bummer.
+          */ 
+          response_or_reference: {
+            name: "200"
+            value: {
+              response: {
+                description: "Does not overrides 200"
+              }
+            }
+          }
+          default: {
+            response: {
+              description: "Does not overrides default"
+              content: {
+                additional_properties: {
+                  name: 'application/json'
+                  value: {
+                    schema: {
+                      reference: {
+                        _ref: "#/components/schemas/SomeOtherResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
     };
   }
 }
 
-service Messaging2 {
-  rpc UpdateMessage(Message) returns (Message) {}
-}
-
-message Message {
+message UserInfoRequest {
+  /*
+    Annotations at the message level
+  */ 
   option (gnostic.openapi.v3.schema) = {
-    title: "This is an overridden message schema title";
+    title: "This is the Request message";
   };
 
   int64 id = 1;
+
+  /*
+    Annotations at the field level
+  */
   string label = 2 [
     (gnostic.openapi.v3.property) = {
       title: "this is an overriden field schema title";
       max_length: 255;
+      example: {
+        yaml: "{ \"userInput\": { \"location\": { \"fsa\": \"H0H\" } } }"
+      }
     }
   ];
+}
+
+message UserInfoResponse {
+  option (gnostic.openapi.v3.schema) = {
+    title: "This is the Response Message";
+  };
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  /*
+    ISSUE: The oneof gets completely ignored by gnostics. They get registered as different fields in the openapi file.
+  */
+  oneof contact_info {
+    Address address = 4;
+    Phone phone = 5;
+  }
+}
+
+message Address {
+  string street = 1;
+  string city = 2;
+  string state = 3;
+  string zip = 4;
+}
+
+message Phone {
+  string number = 1;
+  string type = 2;
 }

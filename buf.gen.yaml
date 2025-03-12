@@ -4,3 +4,10 @@ plugins:
     out: gen/openapi
     opt:
       - enum_type=string
+  - plugin: protoc-gen-connect-openapi
+    path: /Users/Eduardo.Poleo/.asdf/installs/golang/1.23.4/packages/bin/protoc-gen-connect-openapi
+    out: api/
+    opt:
+      - format=yaml
+      - debug
+

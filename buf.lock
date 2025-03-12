@@ -5,11 +5,14 @@ deps:
     owner: gnostic
     repository: gnostic
     commit: 087bc8072ce44e339f213209e4d57bf0
+    digest: shake256:4689c26f0460fea84c4c277c1b9c7e7d657388c5b4116d1065f907a92100ffbea87de05bbd138a0166411361e1f6ce063b4c0c6002358d39710f3c4a8de788d5
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: cc9c423640a448ec81a25b69927172cf
+    commit: 751cbe31638d43a9bfb6162cd2352e67
+    digest: shake256:87f55470d9d124e2d1dedfe0231221f4ed7efbc55bc5268917c678e2d9b9c41573a7f9a557f6d8539044524d9fc5ca8fbb7db05eb81379d168285d76b57eb8a4
   - remote: buf.build
     owner: grpc-ecosystem
     repository: grpc-gateway
-    commit: ba66afc387e740a8b403f1ca738fa78a
+    commit: 4c5ba75caaf84e928b7137ae5c18c26a
+    digest: shake256:e174ad9408f3e608f6157907153ffec8d310783ee354f821f57178ffbeeb8faa6bb70b41b61099c1783c82fe16210ebd1279bc9c9ee6da5cffba9f0e675b8b99

@@ -3,22 +3,20 @@
 
 openapi: 3.0.3
 info:
-    title: Title from annotation
-    description: Description from annotation
-    contact:
-        name: Contact Name
-        url: https://github.com/google/gnostic
-        email: gnostic@google.com
-    license:
-        name: Apache License
-        url: https://github.com/google/gnostic/blob/master/LICENSE
-    version: Version from annotation
+    title: Curator
+    version: "1.0"
+servers:
+    - url: dev-api.flipp.com/curator
+      description: Personalization service
 paths:
     /v1/messages/{message_id}:
         patch:
             tags:
                 - Messaging1
-            operationId: Messaging1_UpdateMessage
+                - Content
+            summary: Get Content
+            description: ./docs/get_content.md
+            operationId: CuratorService_GetContent
             parameters:
                 - name: message_id
                   in: path
@@ -29,25 +27,53 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Message'
+                            $ref: '#/components/schemas/UserInfoRequest'
                 required: true
             responses:
+                default:
+                    description: Does not overrides default
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SomeOtherResponse'
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Message'
+                                $ref: '#/components/schemas/UserInfoResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+                "201":
+                    description: Example on how to add a response to a operation annotation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContentResponse'
+                            example: {"publications": [{"globalId": "01HWX8FNE2ZAV0B4P5RQ7TN95G", "merchantId": 1, "dates": {"availableFrom": "2024-04-08T18:47:43Z", "availableTo": "2026-04-18T18:47:43Z", "validFrom": "2024-04-08T18:47:43Z", "validTo": "2026-04-18T18:47:43Z"}, "details": {"name": "some-name", "description": "some-description", "imageUrl": "https://example.com", "additionalInfo": {"key": "NewValue"}, "backgroundImageUrl": "https://example.com/background_image.jpg", "backgroundColor": "#FFFFFF", "tintColor": "#FFFFFF", "additionalMedia": []}, "language": "LANGUAGE_EN", "source": "", "legacyIds": null}, {"globalId": "01HXYF6J1PHEQJ9Y293NTTPH0G", "merchantId": 111111, "dates": {"availableFrom": "2024-12-01T12:00:00Z", "availableTo": "2024-12-31T12:00:00Z", "validFrom": "2024-12-01T12:00:00Z", "validTo": "2024-12-31T12:00:00Z"}, "details": {"name": "some-name", "description": "some-description", "imageUrl": "http://some-image.com", "additionalInfo": {}, "backgroundImageUrl": "https://example.com/background_image.jpg", "backgroundColor": "", "tintColor": "", "additionalMedia": []}, "language": "LANGUAGE_EN", "source": "", "legacyIds": null}], "total": 0}
+                "404":
+                    description: Multiple response can be defined at the operation level
+                "200":
+                    description: Does not overrides 200
             security:
                 - BasicAuth: []
 components:
     schemas:
+        Address:
+            type: object
+            properties:
+                street:
+                    type: string
+                city:
+                    type: string
+                state:
+                    type: string
+                zip:
+                    type: string
         GoogleProtobufAny:
             type: object
             properties:
@@ -56,15 +82,12 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        Message:
-            title: This is an overridden message schema title
+        Phone:
             type: object
             properties:
-                id:
+                number:
                     type: string
-                label:
-                    title: this is an overriden field schema title
-                    maxLength: 255
+                type:
                     type: string
         Status:
             type: object
@@ -82,9 +105,38 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UserInfoRequest:
+            title: This is the Request message
+            type: object
+            properties:
+                id:
+                    type: string
+                label:
+                    example: {"userInput": {"location": {"fsa": "H0H"}}}
+                    title: this is an overriden field schema title
+                    maxLength: 255
+                    type: string
+                    description: Annotations at the field level
+        UserInfoResponse:
+            title: This is the Response Message
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                email:
+                    type: string
+                address:
+                    $ref: '#/components/schemas/Address'
+                phone:
+                    $ref: '#/components/schemas/Phone'
     securitySchemes:
-        BasicAuth:
-            type: http
-            scheme: basic
+        ApiKeyAuth:
+            type: apiKey
+            name: Authorization
+            in: header
+security:
+    - ApiKeyAuth: []
 tags:
     - name: Messaging1
