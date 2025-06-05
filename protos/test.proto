@@ -96,7 +96,7 @@ service Messaging1 {
             name: "201"
             value: {
               response: {
-                description: "Example on how to add a response to a operation annotation"
+                description: "Complex rsponse with reference and examples"
                 content: {
                   additional_properties: {
                     name: "application/json"
@@ -122,7 +122,7 @@ service Messaging1 {
             name: "404"
             value: {
               response: {
-                description: "Multiple response can be defined at the operation level"
+                description: "Multiple response and 404"
               }
             }
           }
@@ -130,13 +130,13 @@ service Messaging1 {
             name: "200"
             value: {
               response: {
-                description: "Does not overrides 200"
+                description: "User defined operations take precedence over Google Status messages"
               }
             }
           }
           default: {
             response: {
-              description: "Does not overrides default"
+              description: "Default response can also be set"
               content: {
                 additional_properties: {
                   name: 'application/json'
