@@ -9,7 +9,6 @@ paths:
   /v1/messages/{message_id}:
     patch:
       tags:
-        - tests.openapiv3annotations.message.v1.Messaging1
         - Content
       summary: Get Content
       description: ./docs/get_content.md
@@ -88,17 +87,21 @@ components:
       additionalProperties: false
     tests.openapiv3annotations.message.v1.UserInfoResponse:
       type: object
-      anyOf:
-        - required:
+      oneOf:
+        - properties:
+            address:
+              title: address
+              $ref: '#/components/schemas/tests.openapiv3annotations.message.v1.Address'
+          title: address
+          required:
             - address
-        - required:
+        - properties:
+            phone:
+              title: phone
+              $ref: '#/components/schemas/tests.openapiv3annotations.message.v1.Phone'
+          title: phone
+          required:
             - phone
-        - not:
-            anyOf:
-              - required:
-                  - address
-              - required:
-                  - phone
       properties:
         id:
           type:
@@ -112,12 +115,6 @@ components:
         email:
           type: string
           title: email
-        address:
-          title: address
-          $ref: '#/components/schemas/tests.openapiv3annotations.message.v1.Address'
-        phone:
-          title: phone
-          $ref: '#/components/schemas/tests.openapiv3annotations.message.v1.Phone'
       title: This is the Response Message
       additionalProperties: false
     connect-protocol-version:

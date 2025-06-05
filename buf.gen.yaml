@@ -1,11 +1,8 @@
 version: v1
 plugins:
-  - plugin: buf.build/community/google-gnostic-openapi:v0.7.0
-    out: gen/openapi
-    opt:
-      - enum_type=string
-  - plugin: protoc-gen-connect-openapi
-    path: /Users/Eduardo.Poleo/.asdf/installs/golang/1.23.4/packages/bin/protoc-gen-connect-openapi
-    out: api/
+  - plugin: connect-openapi
+    out: ./gen
     opt:
       - format=yaml
+      - without-default-tags
+      - path=example-spec.yaml
