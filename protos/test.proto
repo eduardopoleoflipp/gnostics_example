@@ -68,7 +68,7 @@ service Messaging1 {
         body: "*"
     };
     /*
-      Operations level annotations
+      Operations (rpc) level annotations
       - We can add tags summary etc.
     */
     option(gnostic.openapi.v3.operation) = {
