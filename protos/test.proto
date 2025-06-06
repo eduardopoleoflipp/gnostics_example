@@ -130,11 +130,13 @@ service Messaging1 {
                 description: "Multiple response and 404"
                 content: {
                   additional_properties: {
-                    example: {
-                      /*
-                        If you do not want to paste long json documents you can reference external files. This is not an OAS feature but a Flipp specific functionality that we created. You need to make sure that your CI is setup adequately for this to work.
-                      */
-                      yaml: "./docs/examples/example2.json"
+                    value: {
+                      example: {
+                        /*
+                          If you do not want to paste long json documents you can reference external files. This is not an OAS feature but a Flipp specific functionality that we created. You need to make sure that your CI is setup adequately for this to work.
+                        */
+                        yaml: "./docs/404_long_response.json"
+                      }
                     }
                   }
                 }

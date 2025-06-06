@@ -37,6 +37,8 @@ paths:
               example: {"publications": [{"globalId": "01HWX8FNE2ZAV0B4P5RQ7TN95G", "merchantId": 1, "dates": {"availableFrom": "2024-04-08T18:47:43Z", "availableTo": "2026-04-18T18:47:43Z", "validFrom": "2024-04-08T18:47:43Z", "validTo": "2026-04-18T18:47:43Z"}, "details": {"name": "some-name", "description": "some-description", "imageUrl": "https://example.com", "additionalInfo": {"key": "NewValue"}, "backgroundImageUrl": "https://example.com/background_image.jpg", "backgroundColor": "#FFFFFF", "tintColor": "#FFFFFF", "additionalMedia": []}, "language": "LANGUAGE_EN", "source": "", "legacyIds": null}, {"globalId": "01HXYF6J1PHEQJ9Y293NTTPH0G", "merchantId": 111111, "dates": {"availableFrom": "2024-12-01T12:00:00Z", "availableTo": "2024-12-31T12:00:00Z", "validFrom": "2024-12-01T12:00:00Z", "validTo": "2024-12-31T12:00:00Z"}, "details": {"name": "some-name", "description": "some-description", "imageUrl": "http://some-image.com", "additionalInfo": {}, "backgroundImageUrl": "https://example.com/background_image.jpg", "backgroundColor": "", "tintColor": "", "additionalMedia": []}, "language": "LANGUAGE_EN", "source": "", "legacyIds": null}], "total": 0}
         "404":
           description: Multiple response and 404
+          content:
+            example: ./docs/404_long_response.json
       security:
         - BasicAuth: []
 components:
