@@ -24,7 +24,7 @@ import "gnostic/openapi/v3/annotations.proto";
 
 option go_package = "github.com/google/gnostic/apps/protoc-gen-openapi/examples/tests/openapiv3annotations/message/v1;message";
 /*
-  Annotations at the document level
+  Document level annotations
 */ 
 option (gnostic.openapi.v3.document) = {
   info: {
@@ -74,7 +74,12 @@ service Messaging1 {
     option(gnostic.openapi.v3.operation) = {
         summary: "Get Content"
         /*
-          ISSUE we can't have a ref under the description cuz description is only a string.
+          You can refer to markdown documents in here if you want extend the endpoint explanation. At CI time the description field will be overwritten by something like this:
+
+            description:
+              $ref: "./docs/get_content.md"
+
+          Then readme will add  nicely formatted documentation on top of the endpoint. It's important to note that this is custom functionality that we've added through CI and NOT an OAS native feature. For this to work you'll need to make sure that the CI is setup correctly.
         */ 
         description: "./docs/get_content.md"
         operation_id: "CuratorService_GetContent"
@@ -108,7 +113,7 @@ service Messaging1 {
                       }
                       example: {
                         /*
-                          Long examples can be added even if the key says yaml the get properly converted into json in the resulting openapi file
+                          Long examples can be added even. The yaml key is misleading, json docs also get properly converted in the in the final file.
                         */
                         yaml: "{\"publications\":[{\"globalId\":\"01HWX8FNE2ZAV0B4P5RQ7TN95G\",\"merchantId\":1,\"dates\":{\"availableFrom\":\"2024-04-08T18:47:43Z\",\"availableTo\":\"2026-04-18T18:47:43Z\",\"validFrom\":\"2024-04-08T18:47:43Z\",\"validTo\":\"2026-04-18T18:47:43Z\"},\"details\":{\"name\":\"some-name\",\"description\":\"some-description\",\"imageUrl\":\"https://example.com\",\"additionalInfo\":{\"key\":\"NewValue\"},\"backgroundImageUrl\":\"https://example.com/background_image.jpg\",\"backgroundColor\":\"#FFFFFF\",\"tintColor\":\"#FFFFFF\",\"additionalMedia\":[]},\"language\":\"LANGUAGE_EN\",\"source\":\"\",\"legacyIds\":null},{\"globalId\":\"01HXYF6J1PHEQJ9Y293NTTPH0G\",\"merchantId\":111111,\"dates\":{\"availableFrom\":\"2024-12-01T12:00:00Z\",\"availableTo\":\"2024-12-31T12:00:00Z\",\"validFrom\":\"2024-12-01T12:00:00Z\",\"validTo\":\"2024-12-31T12:00:00Z\"},\"details\":{\"name\":\"some-name\",\"description\":\"some-description\",\"imageUrl\":\"http://some-image.com\",\"additionalInfo\":{},\"backgroundImageUrl\":\"https://example.com/background_image.jpg\",\"backgroundColor\":\"\",\"tintColor\":\"\",\"additionalMedia\":[]},\"language\":\"LANGUAGE_EN\",\"source\":\"\",\"legacyIds\":null}],\"total\":0}"
                       }
@@ -123,6 +128,16 @@ service Messaging1 {
             value: {
               response: {
                 description: "Multiple response and 404"
+                content: {
+                  additional_properties: {
+                    example: {
+                      /*
+                        If you do not want to paste long json documents you can reference external files. This is not an OAS feature but a Flipp specific functionality that we created. You need to make sure that your CI is setup adequately for this to work.
+                      */
+                      yaml: "./docs/examples/example2.json"
+                    }
+                  }
+                }
               }
             }
           }
